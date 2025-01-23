@@ -5,7 +5,6 @@ import static java.awt.Color.GREEN;
 import static java.awt.Color.MAGENTA;
 import static java.awt.Color.RED;
 import static java.time.LocalDate.now;
-import static java.util.Comparator.comparing;
 import static school.hei.asa.model.DailyExecution.Type.fullCare;
 import static school.hei.asa.model.DailyExecution.Type.fullWork;
 import static school.hei.asa.model.DailyExecution.Type.mixedWorkAndCare;
@@ -23,7 +22,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import school.hei.asa.endpoint.rest.model.th.ThYear;
 import school.hei.asa.endpoint.rest.security.WorkerFromAuthentication;
 import school.hei.asa.model.Worker;
-import school.hei.asa.repository.WorkerRepository;
 import school.hei.asa.service.CalendarService;
 
 @AllArgsConstructor
@@ -32,7 +30,7 @@ public class CalendarController {
 
   private final CalendarService calendarService;
   private final WorkerFromAuthentication workerFromAuthentication;
-  private final WorkerRepository workerRepository;
+  private final WorkerToModelAdder workerToModelAdder;
 
   @GetMapping("/work-and-care-calendar")
   public String getCalendar(
@@ -42,12 +40,11 @@ public class CalendarController {
     var year = now().getYear();
     model.addAttribute("year", year);
 
-    var worker =
+    var workerCodeOrAuth =
         workerCode == null || workerCode.isBlank()
-            ? workerFromAuthentication.apply(authentication).get()
-            : workerRepository.findByCode(workerCode);
-    model.addAttribute("worker", worker);
-
+            ? workerFromAuthentication.apply(authentication).get().code()
+            : workerCode;
+    var worker = workerToModelAdder.apply(workerCodeOrAuth, model);
     model.addAttribute(
         "thYear",
         new ThYear(
@@ -56,8 +53,6 @@ public class CalendarController {
             getColoredDates(year, worker),
             colorDescription()));
 
-    model.addAttribute(
-        "workers", workerRepository.findAll().stream().sorted(comparing(Worker::name)));
     return "calendar";
   }
 

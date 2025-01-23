@@ -23,11 +23,11 @@ public class MissionExecutionRepository {
 
   @Transactional
   public List<MissionExecution> findAllBy(Worker worker, LocalDate date) {
-    return missionExecutionsBy(worker).getOrDefault(date, List.of());
+    return missionExecutionsByDate(worker).getOrDefault(date, List.of());
   }
 
   @Transactional
-  public Map<LocalDate, List<MissionExecution>> missionExecutionsBy(Worker worker) {
+  public Map<LocalDate, List<MissionExecution>> missionExecutionsByDate(Worker worker) {
     var jmeList = jMissionExecutionRepository.findAllByWorker(workerMapper.toEntity(worker));
     var meList = missionExecutionMapper.toDomain(jmeList);
     return meList.stream().collect(groupingBy(MissionExecution::date));

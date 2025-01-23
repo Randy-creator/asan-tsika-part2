@@ -1,5 +1,6 @@
 package school.hei.asa.repository.mapper;
 
+import java.util.List;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 import school.hei.asa.model.Product;
@@ -13,6 +14,11 @@ public class ProductMapper {
 
   public Product toDomain(JProduct jProduct) {
     return toDomain(jProduct, new Cache());
+  }
+
+  public List<Product> toDomain(List<JProduct> jProducts) {
+    var cache = new Cache();
+    return jProducts.stream().map(jProduct -> toDomain(jProduct, cache)).toList();
   }
 
   /*package-private*/ Product toDomain(JProduct jProduct, Cache cache) {

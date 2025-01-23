@@ -15,10 +15,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import school.hei.asa.endpoint.rest.controller.mapper.ThDailyExecutionMapper;
 import school.hei.asa.endpoint.rest.model.th.ThDailyExecution;
 import school.hei.asa.model.DailyExecution;
-import school.hei.asa.model.Worker;
 import school.hei.asa.repository.DailyExecutionRepository;
 import school.hei.asa.repository.ProductRepository;
-import school.hei.asa.repository.WorkerRepository;
 import school.hei.asa.service.ProductConf;
 
 @Controller
@@ -29,11 +27,14 @@ public class MissionController {
   private final DailyExecutionRepository dailyExecutionRepository;
   private final ProductConf productConf;
   private final ThDailyExecutionMapper thDailyExecutionMapper;
-  private final WorkerRepository workerRepository;
+  private final WorkerToModelAdder workerToModelAdder;
 
   @GetMapping("/missions")
-  public String getMissions(Model model) {
-    model.addAttribute("products", productRepository.findAll());
+  public String getMissions(Model model, @RequestParam(required = false) String workerCode) {
+    var products = productRepository.findAll();
+    model.addAttribute("products", products);
+
+    workerToModelAdder.apply(workerCode, model);
     return "missions";
   }
 
@@ -49,12 +50,7 @@ public class MissionController {
         thDailyExecutions.stream().sorted(comparing(ThDailyExecution::date).reversed()).toList());
     model.addAttribute("careProductCode", productConf.careProductCode());
 
-    var worker =
-        workerCode == null || workerCode.isBlank() ? null : workerRepository.findByCode(workerCode);
-    model.addAttribute("worker", worker);
-    model.addAttribute(
-        "workers", workerRepository.findAll().stream().sorted(comparing(Worker::name)));
-
+    workerToModelAdder.apply(workerCode, model);
     return "mission-executions";
   }
 
