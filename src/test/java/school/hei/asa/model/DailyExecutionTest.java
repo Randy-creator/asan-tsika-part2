@@ -36,9 +36,9 @@ class DailyExecutionTest {
                 worker,
                 now(),
                 List.of(
+                    new MissionExecution(mission, worker, now(), parseDouble("0.1"), "comment"),
+                    new MissionExecution(mission, worker, now(), parseDouble("0.1"), "comment"),
                     new MissionExecution(mission, worker, now(), parseDouble("0.7"), "comment"),
-                    new MissionExecution(mission, worker, now(), parseDouble("0.1"), "comment"),
-                    new MissionExecution(mission, worker, now(), parseDouble("0.1"), "comment"),
                     new MissionExecution(mission, worker, now(), parseDouble("0.1"), "comment"))));
   }
 }
