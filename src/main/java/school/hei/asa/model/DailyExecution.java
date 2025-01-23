@@ -17,7 +17,10 @@ public record DailyExecution(Worker worker, LocalDate date, List<MissionExecutio
     var percentagesSum = executions.stream().mapToDouble(MissionExecution::dayPercentage).sum();
     if (percentagesSum * 100 != 100) {
       throw new IllegalArgumentException(
-          "missionPercentages::sum must equal 1, but was: " + percentagesSum);
+          "missionPercentages::sum must equal 1, but was: "
+              + percentagesSum
+              + ", missionExecutions="
+              + executions);
     }
   }
 
