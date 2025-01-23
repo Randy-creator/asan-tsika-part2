@@ -23,7 +23,7 @@
 </div>
 
 <div>
-    <h2>Mission executions</h2>
+    <h2 th:text="'Mission executions - ' + ${worker == null ? 'All' : worker.name()}"></h2>
     <strong style="color: red">Care missions are colored red.</strong>
     <ul>
         <li th:each="dailyExecution: ${dailyExecutions}">

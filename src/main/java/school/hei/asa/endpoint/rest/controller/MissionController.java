@@ -48,8 +48,13 @@ public class MissionController {
         "dailyExecutions",
         thDailyExecutions.stream().sorted(comparing(ThDailyExecution::date).reversed()).toList());
     model.addAttribute("careProductCode", productConf.careProductCode());
+
+    var worker =
+        workerCode == null || workerCode.isBlank() ? null : workerRepository.findByCode(workerCode);
+    model.addAttribute("worker", worker);
     model.addAttribute(
         "workers", workerRepository.findAll().stream().sorted(comparing(Worker::name)));
+
     return "mission-executions";
   }
 

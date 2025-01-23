@@ -41,10 +41,13 @@ public class CalendarController {
       @RequestParam(required = false) String workerCode) {
     var year = now().getYear();
     model.addAttribute("year", year);
+
     var worker =
         workerCode == null || workerCode.isBlank()
             ? workerFromAuthentication.apply(authentication).get()
             : workerRepository.findByCode(workerCode);
+    model.addAttribute("worker", worker);
+
     model.addAttribute(
         "thYear",
         new ThYear(
@@ -53,7 +56,6 @@ public class CalendarController {
             getColoredDates(year, worker),
             colorDescription()));
 
-    model.addAttribute("worker", worker);
     model.addAttribute(
         "workers", workerRepository.findAll().stream().sorted(comparing(Worker::name)));
     return "calendar";
