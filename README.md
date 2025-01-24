@@ -1,13 +1,20 @@
 # Asa - Work Management Tool
 
-### Features
+## Features
 - Explore all missions across your organizations by products
 - Identify care missions like days off, sick days and team building events
 - Daily track your time by mission
 - Track throughout the year who worked on same missions with you
 - Let your coworkers know when you will not be available
 
-### Running
+## Running
+
+### On cloud, using JCloudify
+
+Asa is hosted on [JCloudify](https://www.jcloudify.com). It's the best way we know to host Spring Boot applications.
+Within a few clicks, you have your Spring Boot running with a publicly accessible URL, and with your CI/CD pipelines automatically configured on Github.
+
+### Locally
 
 First, set all following environment variables.
 ```
@@ -32,13 +39,10 @@ ASA_CARE_PRODUCT_CODE=
 
 Then, run Spring Boot as usual,
 for example by building an uber jar through `gradle bootJar`,
-then by launching `java -jar asa.jar`.
+then by launching `java -jar asa.jar`
+(here is an Uber Jar we built: [v1](https://drive.google.com/file/d/1oo5eESgdkDTnuQo0GBZFVbPkRpKfonqG/view?usp=sharing)).
 As there are a lot of environment variables to set,
 you probably want to load them through an `.env` file:
 `export $(cat .env | xargs) && java -jar asa.jar`.
 
 Last, visit `http://localhost:8080`
-
-### Releases uber jar
-
-* [v1](https://drive.google.com/file/d/1oo5eESgdkDTnuQo0GBZFVbPkRpKfonqG/view?usp=sharing)
