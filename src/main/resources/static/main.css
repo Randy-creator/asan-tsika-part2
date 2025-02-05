@@ -6,7 +6,7 @@ body {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 20px;
-    margin: 20px;
+    padding-inline: 30px;
 }
 
 .month {
@@ -45,3 +45,10 @@ th {
     background-color: #007BFF;
     color: white;
 }
+
+.text-NS { color: #8A2BE2; }
+.text-JC { color: #FFD700; }
+.text-HM { color: #DFA408; }
+.text-HL { color: #DFA408; }
+.text-AA { color: #02dc02; }
+.text-CA { color: #FF6F61; }
