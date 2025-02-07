@@ -39,7 +39,8 @@ public class SecurityConfig {
             oauth2 ->
                 oauth2
                     .successHandler(oAuth2SuccessHandler)
-                    .failureHandler(new SimpleUrlAuthenticationFailureHandler("/")))
+                    .failureHandler(
+                        new SimpleUrlAuthenticationFailureHandler("/login/oauth2/code/cognito")))
         .logout(
             logout ->
                 logout.logoutSuccessHandler(
