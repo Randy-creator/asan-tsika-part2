@@ -35,6 +35,9 @@ public class SecurityConfig {
         .authorizeHttpRequests(
             authz -> authz.requestMatchers("/").permitAll().anyRequest().authenticated())
         .oauth2Login(oauth2 -> oauth2.successHandler(oAuth2SuccessHandler))
+        .formLogin(
+            form ->
+                form.loginPage("/login").defaultSuccessUrl("/", true).failureUrl("/").permitAll())
         .logout(
             logout ->
                 logout.logoutSuccessHandler(
