@@ -35,13 +35,11 @@ public class SecurityConfig {
     http.csrf(Customizer.withDefaults())
         .authorizeHttpRequests(
             authz -> authz.requestMatchers("/").permitAll().anyRequest().authenticated())
-        .oauth2Login(oauth2 -> oauth2.successHandler(oAuth2SuccessHandler))
-        .formLogin(
-            form ->
-                form.loginPage("/login")
-                    .defaultSuccessUrl("/", true)
-                    .failureHandler(new SimpleUrlAuthenticationFailureHandler("/"))
-                    .permitAll())
+        .oauth2Login(
+            oauth2 ->
+                oauth2
+                    .successHandler(oAuth2SuccessHandler)
+                    .failureHandler(new SimpleUrlAuthenticationFailureHandler("/")))
         .logout(
             logout ->
                 logout.logoutSuccessHandler(
