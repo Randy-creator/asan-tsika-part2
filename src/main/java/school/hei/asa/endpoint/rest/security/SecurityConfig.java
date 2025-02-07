@@ -40,7 +40,7 @@ public class SecurityConfig {
                 oauth2
                     .successHandler(oAuth2SuccessHandler)
                     .failureHandler(
-                        new SimpleUrlAuthenticationFailureHandler("/work-and-care-calendar")))
+                        new SimpleUrlAuthenticationFailureHandler("/oauth2/authorization/cognito")))
         .logout(
             logout ->
                 logout.logoutSuccessHandler(
