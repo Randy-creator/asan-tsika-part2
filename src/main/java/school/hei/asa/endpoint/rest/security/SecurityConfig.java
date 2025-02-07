@@ -7,6 +7,7 @@ import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
 
 @Configuration
 @EnableWebSecurity
@@ -37,7 +38,10 @@ public class SecurityConfig {
         .oauth2Login(oauth2 -> oauth2.successHandler(oAuth2SuccessHandler))
         .formLogin(
             form ->
-                form.loginPage("/login").defaultSuccessUrl("/", true).failureUrl("/").permitAll())
+                form.loginPage("/login")
+                    .defaultSuccessUrl("/", true)
+                    .failureHandler(new SimpleUrlAuthenticationFailureHandler("/"))
+                    .permitAll())
         .logout(
             logout ->
                 logout.logoutSuccessHandler(
