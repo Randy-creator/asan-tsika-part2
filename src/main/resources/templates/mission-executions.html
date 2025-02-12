@@ -13,6 +13,11 @@
 <div class="m-6">
     <h2 class="text-xl font-bold mb-2">Worker</h2>
     <div th:replace="fragments/workerSelector :: workerSelector(mission-executions, All)"></div>
+
+    <input id="monthPicker" type="month"
+           th:value="${month}"
+           onchange="updateMonth(this.value)"
+           style="margin-top: 20px;" />
 </div>
 
 <div class="m-6">
@@ -40,6 +45,18 @@
     </ul>
 </div>
 
+<script>
+    function updateFilters() {
+        const workerCode = document.getElementById("worker").value;
+        const month = document.getElementById("monthPicker").value;
+        window.location.href = `/mission-executions?yearMonth=${month}&workerCode=${workerCode}`;
+    }
+
+    document.addEventListener("DOMContentLoaded", function() {
+        document.getElementById("worker").addEventListener("change", updateFilters);
+        document.getElementById("monthPicker").addEventListener("change", updateFilters);
+    });
+</script>
 <div th:replace="fragments/footer :: footer"></div>
 </body>
 
