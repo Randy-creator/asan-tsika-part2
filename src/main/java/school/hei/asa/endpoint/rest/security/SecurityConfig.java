@@ -1,7 +1,5 @@
 package school.hei.asa.endpoint.rest.security;
 
-import static org.springframework.security.config.http.SessionCreationPolicy.ALWAYS;
-
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -9,6 +7,7 @@ import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
 
 @Configuration
 @EnableWebSecurity
@@ -21,7 +20,7 @@ public class SecurityConfig {
 
   public SecurityConfig(
       @Value("${spring.security.oauth2.client.registration.cognito.clientid}")
-          String cognitoClientId,
+      String cognitoClientId,
       @Value("${cognito.logout.url}") String cognitoLogoutUrl,
       @Value("${asa.logout.url}") String asaLogoutUrl,
       OAuth2SuccessHandler oAuth2SuccessHandler) {
@@ -36,18 +35,26 @@ public class SecurityConfig {
     http.csrf(Customizer.withDefaults())
         .authorizeHttpRequests(
             authz -> authz.requestMatchers("/").permitAll().anyRequest().authenticated())
-        .oauth2Login(oauth2 -> oauth2.successHandler(oAuth2SuccessHandler))
-        .sessionManagement(s -> s.sessionCreationPolicy(ALWAYS))
+        .oauth2Login(
+            oauth2 ->
+                oauth2
+                    .successHandler(oAuth2SuccessHandler)
+                    .failureHandler(
+                        // On success redirection from Cognito hits amazonaws.com URL instead of
+                        // custom domain URL
+                        // so it is incorrectly interpreted as authorization_request_not_found.
+                        // Redo the call and it will be Ok.
+                        new SimpleUrlAuthenticationFailureHandler("/oauth2/authorization/cognito")))
         .logout(
             logout ->
                 logout.logoutSuccessHandler(
                     (request, response, authentication) ->
                         response.sendRedirect(
                             cognitoLogoutUrl
-                                + "?client_id="
-                                + cognitoClientId
-                                + "&logout_uri="
-                                + asaLogoutUrl)));
+                            + "?client_id="
+                            + cognitoClientId
+                            + "&logout_uri="
+                            + asaLogoutUrl)));
     return http.build();
   }
 }

@@ -3,25 +3,29 @@
 <head>
     <title>Asa - Missions by Products</title>
     <link href="/main.css" rel="stylesheet"/>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
 </head>
 
-<body>
+<body class="bg-gray-50 text-gray-800">
 <div th:replace="fragments/header :: header"></div>
 
-<div>
-    <h2>Worker</h2>
+<div class="m-6">
+    <h2 class="text-xl font-bold mb-2">Worker</h2>
     <div th:replace="fragments/workerSelector :: workerSelector(missions, All)"></div>
 </div>
 
-<div>
-    <h2 th:text="'Missions by Products - ' + ${worker == null ? 'All' : worker.name()}"></h2>
-    <ul>
-        <li th:each="p: ${products}">
-            <strong th:text="${p.code()} + ': ' + ${p.name()} + ' (' + ${p.executedDays()} + ')'"
+<div class="m-6">
+    <h2 class="text-xl font-bold mb-2" th:text="'Missions by Products - ' + ${worker == null ? 'All' : worker.name()}"></h2>
+    <ul class="ml-6 list-disc">
+        <li th:each="p: ${products}" class="mb-4">
+            <strong class="text-lg font-semibold"
+                    th:text="${p.code()} + ': ' + ${p.name()} + ' (' + ${p.executedDays()} + ')'"
                     th:title="${p.description()}">
             </strong>
-            <ul>
+            <ul class="ml-6 list-disc">
                 <li th:each="m: ${p.missions()}"
+                    class="ml-4 text-sm"
                     th:text="${m.getCode()} + ': ' + ${m.getTitle()} + ' (' + ${m.executedDays()}  + ')'"
                     th:title="${m.getDescription()}">
                 </li>
@@ -29,6 +33,5 @@
         </li>
     </ul>
 </div>
-
 </body>
 </html>
