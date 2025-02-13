@@ -17,12 +17,16 @@
     <input id="monthPicker" type="month"
            th:value="${month}"
            onchange="updateMonth(this.value)"
-           style="margin-top: 20px;" />
+           style="margin-top: 20px;"/>
 </div>
 
 <div class="m-6">
-    <h2 class="text-xl font-bold mb-2" th:text="'Mission executions - ' + ${worker == null ? 'All' : worker.name()}"></h2>
+    <h2 class="text-xl font-bold mb-2"
+        th:text="'Mission executions - ' + ${worker == null ? 'All' : worker.name()}"></h2>
+
     <strong class="text-red-500">Care missions are colored red.</strong>
+    <strong class="text-blue-500">!Important missions executions are colored blue.</strong>
+
     <ul class="ml-6 list-disc">
         <li th:each="dailyExecution: ${dailyExecutions}" class="mb-4">
             <h3 class="text-lg font-semibold" th:text="${dailyExecution.date()}"></h3>
@@ -36,7 +40,9 @@
                         <li th:each="me: ${thMe.executions()}"
                             class="ml-4 text-sm"
                             th:text="${me.worker().name()} + ' ('+ ${me.dayPercentage()} +'): ' + ${me.comment()}"
-                            th:style="'color: ' + (${me.mission().isCare(careProductCode)} ? 'red' : 'black')">
+                            th:style="'color: ' + (${me.mission().isCare(careProductCode)}
+                            ? 'red'
+                            : (${me.comment().startsWith('!')} ? 'blue' : 'black'))">
                         </li>
                     </ul>
                 </li>
@@ -52,7 +58,7 @@
         window.location.href = `/mission-executions?yearMonth=${month}&workerCode=${workerCode}`;
     }
 
-    document.addEventListener("DOMContentLoaded", function() {
+    document.addEventListener("DOMContentLoaded", function () {
         document.getElementById("worker").addEventListener("change", updateFilters);
         document.getElementById("monthPicker").addEventListener("change", updateFilters);
     });
