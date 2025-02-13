@@ -25,7 +25,7 @@
         th:text="'Mission executions - ' + ${worker == null ? 'All' : worker.name()}"></h2>
 
     <strong class="text-red-500">Care missions are colored red.</strong>
-    <strong class="text-blue-500">!Important missions executions are colored blue.</strong>
+    <strong class="text-blue-500">!Important mission executions are colored blue.</strong>
 
     <ul class="ml-6 list-disc">
         <li th:each="dailyExecution: ${dailyExecutions}" class="mb-4">
