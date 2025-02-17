@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
@@ -55,20 +56,21 @@ class DailyExecutionControllerIT extends FacadeIT {
   }
 
   @Test
-  void save_then_read() {
+  void save_then_read_with_duplicates_ok_if_sum_of_set_is_100() {
     setUp();
     var dmeForm =
         new ThDailyExecutionForm(
-            "2024-12-01",
+            "2024-12-03",
             "mission1-code",
-            "0.2",
+            "0.4",
             "missionComment1",
             "mission2-code",
-            "0.8",
+            "0.6",
             "missionComment2",
-            null,
-            null,
-            null,
+            // duplicate of mission2 (missionCode2, missionPercentage2, missionComment2)
+            "mission2-code",
+            "0.6",
+            "missionComment2",
             null,
             null,
             null,
@@ -82,7 +84,10 @@ class DailyExecutionControllerIT extends FacadeIT {
     assertEquals(2, savedWorker.executionsByMission().keySet().size());
     var savedMission1 = missionRepository.findByCode("mission1-code");
     assertEquals(1, savedMission1.get().workers().size());
-    var savedDailyExecutions = dailyExecutionRepository.findAll();
+    var savedDailyExecutions =
+        dailyExecutionRepository.findAll().stream()
+            .filter(de -> savedWorker.equals(de.worker()))
+            .toList();
     assertEquals(1, savedDailyExecutions.size());
     var savedProduct = productRepository.findByCode("pcode");
     assertEquals(1, savedProduct.executedDays());
@@ -114,5 +119,12 @@ class DailyExecutionControllerIT extends FacadeIT {
     assertThrows(
         IllegalArgumentException.class,
         () -> dailyExecutionController.createDailyExecution(authentication, dmeForm));
+  }
+
+  @Test
+  void read_worker_lita_with_duplicate_missions_and_percentage_over_100_ok() {
+    LocalDate firstOfJanuary2024 = LocalDate.parse("2024-01-01");
+    dailyExecutionRepository.findByWorkerCodeAndDateBetween(
+        "W-P-2024-01", firstOfJanuary2024, firstOfJanuary2024);
   }
 }
