@@ -1,5 +1,6 @@
 package school.hei.asa.endpoint;
 
+import static java.time.Month.DECEMBER;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
@@ -81,7 +82,10 @@ class DailyExecutionControllerIT extends FacadeIT {
     dailyExecutionController.createDailyExecution(authentication, dmeForm);
 
     var savedWorker = workerRepository.findByCode(authenticatedWorker.code());
-    assertEquals(2, savedWorker.executionsByMission().keySet().size());
+    var dailyExecutions =
+        dailyExecutionRepository.findByWorkerCodeAndDateBetween(
+            savedWorker.code(), LocalDate.of(2024, DECEMBER, 3), LocalDate.of(2024, DECEMBER, 3));
+    assertEquals(1, dailyExecutions.size());
     var savedMission1 = missionRepository.findByCode("mission1-code");
     assertEquals(1, savedMission1.get().workers().size());
     var savedDailyExecutions =

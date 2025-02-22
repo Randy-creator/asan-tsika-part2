@@ -1,5 +1,8 @@
 package school.hei.asa.service;
 
+import static java.time.Month.DECEMBER;
+import static java.time.Month.JANUARY;
+
 import jakarta.transaction.Transactional;
 import java.time.LocalDate;
 import java.time.Month;
@@ -13,11 +16,13 @@ import school.hei.asa.model.DailyExecution;
 import school.hei.asa.model.Mission;
 import school.hei.asa.model.Worker;
 import school.hei.asa.model.WorkerCalendar;
+import school.hei.asa.repository.DailyExecutionRepository;
 
 @AllArgsConstructor
 @Service
 public class CalendarService {
 
+  private final DailyExecutionRepository dailyExecutionRepository;
   private final CareProductCodeSupplier careProductCodeSupplier;
   private final PaidCareMissionCodesSupplier paidCareMissionCodesSupplier;
 
@@ -26,6 +31,8 @@ public class CalendarService {
       Worker worker, int year) {
     return new WorkerCalendar(
             worker,
+            dailyExecutionRepository.findByWorkerCodeAndDateBetween(
+                worker.code(), LocalDate.of(year, JANUARY, 1), LocalDate.of(year, DECEMBER, 31)),
             year,
             new school.hei.asa.model.ProductConf(
                 careProductCodeSupplier.get(), paidCareMissionCodesSupplier.get()))
@@ -37,6 +44,8 @@ public class CalendarService {
       Worker worker, int year) {
     return new WorkerCalendar(
             worker,
+            dailyExecutionRepository.findByWorkerCodeAndDateBetween(
+                worker.code(), LocalDate.of(year, JANUARY, 1), LocalDate.of(year, DECEMBER, 31)),
             year,
             new school.hei.asa.model.ProductConf(
                 careProductCodeSupplier.get(), paidCareMissionCodesSupplier.get()))

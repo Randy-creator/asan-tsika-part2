@@ -1,11 +1,8 @@
 package school.hei.asa.repository.mapper;
 
-import static java.util.stream.Collectors.groupingBy;
-
 import java.util.List;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
-import school.hei.asa.model.DailyExecution;
 import school.hei.asa.model.FullTimeEmployee;
 import school.hei.asa.model.PartnerContractor;
 import school.hei.asa.model.StudentContractor;
@@ -17,8 +14,6 @@ import school.hei.asa.repository.model.WorkerType;
 @AllArgsConstructor
 @Component
 public class WorkerMapper {
-
-  private final MissionExecutionMapper missionExecutionMapper;
 
   public Worker toDomain(JWorker jWorker) {
     return toDomain(jWorker, new Cache());
@@ -41,21 +36,7 @@ public class WorkerMapper {
         };
     cache.put(code, worker, Worker.class);
 
-    executeMissions(jWorker.getMissionExecutions(), worker, cache);
     return worker;
-  }
-
-  private void executeMissions(List<JMissionExecution> jmeList, Worker worker, Cache cache) {
-    var executionsByDate = jmeList.stream().collect(groupingBy(JMissionExecution::getDate));
-    executionsByDate.forEach(
-        (date, jmeListByDate) ->
-            worker.execute(
-                new DailyExecution(
-                    worker,
-                    date.toLocalDate(),
-                    jmeListByDate.stream()
-                        .map(jme -> missionExecutionMapper.toDomain(jme, cache))
-                        .toList())));
   }
 
   JWorker toEntity(Worker worker, List<JMissionExecution> jmeList) {
