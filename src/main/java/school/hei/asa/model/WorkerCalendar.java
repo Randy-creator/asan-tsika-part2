@@ -1,6 +1,10 @@
 package school.hei.asa.model;
 
-import static java.util.stream.Collectors.*;
+import static java.util.stream.Collectors.collectingAndThen;
+import static java.util.stream.Collectors.flatMapping;
+import static java.util.stream.Collectors.groupingBy;
+import static java.util.stream.Collectors.mapping;
+import static java.util.stream.Collectors.summingDouble;
 
 import java.time.LocalDate;
 import java.time.Month;
@@ -21,14 +25,12 @@ public class WorkerCalendar {
   private final ProductConf productConf;
   private final List<DailyExecution> dailyExecutions;
 
-  public WorkerCalendar(Worker worker, int year, ProductConf productConf) {
+  public WorkerCalendar(
+      Worker worker, List<DailyExecution> dailyExecutions, int year, ProductConf productConf) {
     this.worker = worker;
     this.year = year;
     this.productConf = productConf;
-    this.dailyExecutions =
-        worker.dailyExecutions().stream()
-            .filter(me -> year == me.date().getYear())
-            .collect(toList());
+    this.dailyExecutions = dailyExecutions;
   }
 
   public Map<DailyExecution.Type, List<LocalDate>> datesByDailyExecutionType() {
