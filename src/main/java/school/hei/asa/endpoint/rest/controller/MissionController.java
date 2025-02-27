@@ -1,5 +1,6 @@
 package school.hei.asa.endpoint.rest.controller;
 
+import static java.util.Arrays.stream;
 import static java.util.Comparator.comparing;
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toMap;
@@ -8,9 +9,10 @@ import java.time.LocalDate;
 import java.time.Month;
 import java.time.YearMonth;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -20,6 +22,7 @@ import school.hei.asa.CareProductCodeSupplier;
 import school.hei.asa.endpoint.rest.controller.mapper.ThDailyExecutionMapper;
 import school.hei.asa.endpoint.rest.controller.mapper.ThProductMapper;
 import school.hei.asa.endpoint.rest.model.th.ThDailyExecution;
+import school.hei.asa.endpoint.rest.model.th.ThProduct;
 import school.hei.asa.model.DailyExecution;
 import school.hei.asa.repository.DailyExecutionRepository;
 import school.hei.asa.repository.ProductRepository;
@@ -44,14 +47,28 @@ public class MissionController {
             : thProducts.stream().map(p -> p.filterByWorkerCode(workerCode)).toList();
 
     var filteredThProductsByMonth =
-        Arrays.stream(Month.values())
+        stream(Month.values())
             .collect(
                 toMap(
-                    month -> month,
                     month ->
                         filteredThProductsByWorkerCode.stream()
-                            .map(p -> p.filterByMonth(month))
-                            .toList()));
+                                    .map(p -> p.filterByMonth(month))
+                                    .mapToDouble(ThProduct::executedDays)
+                                    .sum()
+                                > 0
+                            ? month.toString().toLowerCase()
+                            : ' ',
+                    month -> {
+                      var products =
+                          filteredThProductsByWorkerCode.stream()
+                              .map(p -> p.filterByMonth(month))
+                              .toList();
+                      return products.stream().mapToDouble(ThProduct::executedDays).sum() > 0
+                          ? products
+                          : List.of();
+                    },
+                    (v1, v2) -> v1,
+                    LinkedHashMap::new));
 
     model.addAttribute("months", filteredThProductsByMonth);
     model.addAttribute("products", filteredThProductsByWorkerCode);
