@@ -19,12 +19,13 @@ class MissionServiceIT extends FacadeIT {
   void thProductsExecutedDays_count_by_month() {
     var missionExecution1 =
         new ThMissionExecution(
-            "me1", "worker", LocalDate.parse("2025-01-15"), 0.5, "comment", false);
+            "me1", "worker", LocalDate.parse("2025-01-15"), 0.5, "comment", false, false);
     var missionExecution2 =
         new ThMissionExecution(
-            "me2", "worker", LocalDate.parse("2025-02-15"), 0.5, "comment", false);
+            "me2", "worker", LocalDate.parse("2025-02-15"), 0.5, "comment", false, false);
     var missionExecution3 =
-        new ThMissionExecution("me3", "worker", LocalDate.parse("2025-02-20"), 1, "comment", false);
+        new ThMissionExecution(
+            "me3", "worker", LocalDate.parse("2025-02-20"), 1, "comment", false, false);
     var mission1 =
         new ThMission("code1", "mission1", "description", List.of(missionExecution1), false);
     var mission2 =
