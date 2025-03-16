@@ -53,7 +53,7 @@ public class CalendarService {
   }
 
   @Transactional
-  public Map<Month, Long> lateReportedDaysByMonth(Worker worker, int year) {
+  public Map<Month, List<LocalDate>> lateReportedDaysByMonth(Worker worker, int year) {
     return new WorkerCalendar(
             worker,
             dailyExecutionRepository.findByWorkerCodeAndDateBetween(
