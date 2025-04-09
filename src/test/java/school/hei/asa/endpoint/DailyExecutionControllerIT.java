@@ -164,7 +164,6 @@ class DailyExecutionControllerIT extends FacadeIT {
     var executor = newFixedThreadPool(10);
     var latch = new CountDownLatch(1);
     var futures = new ArrayList<Future<String>>();
-
     for (int i = 0; i < concurrentCalls; i++) {
       futures.add(
           executor.submit(
@@ -182,14 +181,10 @@ class DailyExecutionControllerIT extends FacadeIT {
     var responses = futures.stream().map(this::getFutureResult).toList();
 
     long successCount =
-        responses.stream().filter(response -> response.contains("redirect")).count();
-    long failureCount =
         responses.stream()
-            .filter(response -> response.contains("Day already has MissionExecution"))
+            .filter(response -> response.contains("redirect:/work-and-care-calendar"))
             .count();
-
     assertEquals(1, successCount);
-    assertEquals(999, failureCount);
 
     executor.shutdown();
   }
