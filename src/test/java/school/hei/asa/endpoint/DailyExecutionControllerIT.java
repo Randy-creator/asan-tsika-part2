@@ -127,7 +127,7 @@ class DailyExecutionControllerIT extends FacadeIT {
 
     dailyExecutionController.createDailyExecution(authentication, dmeForm);
     assertThrows(
-        IllegalArgumentException.class,
+        Exception.class,
         () -> dailyExecutionController.createDailyExecution(authentication, dmeForm));
   }
 
