@@ -7,10 +7,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import school.hei.asa.endpoint.rest.controller.mapper.ThWorkerMapper;
 import school.hei.asa.endpoint.rest.model.th.ThWorker;
 import school.hei.asa.endpoint.rest.security.WorkerFromAuthentication;
-import school.hei.asa.model.Worker;
-import school.hei.asa.model.WorkerLevelHistory;
+import school.hei.asa.model.*;
 import school.hei.asa.repository.WorkerLevelHistoryRepository;
 import school.hei.asa.repository.WorkerRepository;
 
@@ -22,6 +22,7 @@ public class WorkerController {
   private final WorkerLevelHistoryRepository workerLevelHistoryRepository;
   private final WorkerFromAuthentication workerFromAuthentication;
   private final WorkerToModelAdder workerToModelAdder;
+  private final ThWorkerMapper thWorkerMapper;
 
   @GetMapping("/workers")
   public List<Worker> getWorkers() {
@@ -39,11 +40,15 @@ public class WorkerController {
             : workerCode;
 
     var worker = workerToModelAdder.apply(workerCodeOrAuth, model);
-    List<WorkerLevelHistory> wlhList = workerLevelHistoryRepository.findAllByWorker(worker);
+    var workerLevelHistories = workerLevelHistoryRepository.findAllByWorker(worker);
 
-    var entranceInstant = wlhList.isEmpty() ? null : wlhList.getFirst().entranceInstant();
-    var level = wlhList.isEmpty() ? null : wlhList.getLast().level();
-    var levelEntranceInstant = wlhList.isEmpty() ? null : wlhList.getLast().entranceInstant();
+    var hasLevelHistory = !workerLevelHistories.isEmpty();
+    var entranceInstant = hasLevelHistory ? workerLevelHistories.getLast().entranceInstant() : null;
+    var level = hasLevelHistory ? workerLevelHistories.getFirst().level().getLevel() : null;
+    var levelEntranceInstant =
+        hasLevelHistory ? workerLevelHistories.getFirst().entranceInstant() : null;
+    var contractType = hasLevelHistory ? workerLevelHistories.getFirst().contractType() : null;
+    var workerType = thWorkerMapper.toWorkerType(contractType);
 
     model.addAttribute(
         "worker",
@@ -51,6 +56,7 @@ public class WorkerController {
             worker.code(),
             worker.name(),
             worker.email(),
+            workerType,
             entranceInstant,
             level,
             levelEntranceInstant));
@@ -68,11 +74,12 @@ public class WorkerController {
             : workerCode;
 
     var worker = workerToModelAdder.apply(workerCodeOrAuth, model);
-    List<WorkerLevelHistory> wlhList = workerLevelHistoryRepository.findAllByWorker(worker);
+    var workerLevelHistories =
+        thWorkerMapper.toTh(workerLevelHistoryRepository.findAllByWorker(worker));
 
     model.addAttribute("worker", worker);
     model.addAttribute("workerCode", workerCodeOrAuth);
-    model.addAttribute("workerLevelHistory", wlhList);
+    model.addAttribute("workerLevelHistory", workerLevelHistories);
     return "worker-level-history";
   }
 }

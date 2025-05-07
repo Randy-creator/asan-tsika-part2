@@ -8,12 +8,10 @@ import lombok.experimental.Accessors;
 @Accessors(fluent = true)
 @Getter
 @AllArgsConstructor
-public class ThWorker {
-  String code;
-  String name;
-  String email;
-  String workerType;
-  Instant entranceInstant;
+public class ThWorkerLevelHistory {
   String level;
-  Instant levelEntranceInstant;
+  Instant entranceInstant;
+  String contractType;
+  String totalWorkDays;
+  String totalDaysWorked;
 }
