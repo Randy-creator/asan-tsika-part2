@@ -14,7 +14,6 @@ import school.hei.asa.model.MissionExecution;
 import school.hei.asa.model.Worker;
 import school.hei.asa.model.WorkerLevelHistory;
 import school.hei.asa.repository.MissionExecutionRepository;
-import school.hei.asa.repository.mapper.MissionMapper;
 
 @AllArgsConstructor
 @Component
@@ -24,7 +23,6 @@ public class ThWorkerMapper {
 
   private final MissionExecutionRepository missionExecutionRepository;
   private final CareProductCodeSupplier careProductCodeSupplier;
-  private final MissionMapper missionMapper;
 
   public List<ThWorkerLevelHistory> toTh(List<WorkerLevelHistory> histories) {
     ZoneId zoneId = ZoneId.of("UTC");
