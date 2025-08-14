@@ -2,6 +2,7 @@ package school.hei.asa.endpoint.rest.controller.mapper;
 
 import static java.time.Instant.now;
 
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.ArrayList;
@@ -24,28 +25,30 @@ public class ThWorkerMapper {
   private final CareProductCodeSupplier careProductCodeSupplier;
 
   public List<ThWorkerLevelHistory> toTh(List<WorkerLevelHistory> histories) {
-    ZoneId zoneId = ZoneId.of("UTC");
-    List<ThWorkerLevelHistory> result = new ArrayList<>();
+    if (histories == null || histories.isEmpty()) {
+      return new ArrayList<>();
+    }
+
+    final ZoneId UTC_ZONE = ZoneId.of("UTC");
+    final Instant currentTime = now();
+    final List<ThWorkerLevelHistory> result = new ArrayList<>(histories.size());
 
     for (int i = 0; i < histories.size(); i++) {
-      var current = histories.get(i);
-      var nextEntrance = (i == 0) ? now() : histories.get(i - 1).entranceInstant();
+      final WorkerLevelHistory current = histories.get(i);
+      final Instant nextEntrance = (i == 0) ? currentTime : histories.get(i - 1).entranceInstant();
 
-      double totalDaysWorked =
-          missionExecutionPercentageSumByWorker(
-              current.worker(),
-              current.entranceInstant().atZone(zoneId).toLocalDate(),
-              nextEntrance.atZone(zoneId).toLocalDate());
+      final LocalDate entranceDate = current.entranceInstant().atZone(UTC_ZONE).toLocalDate();
+      final LocalDate nextEntranceDate = nextEntrance.atZone(UTC_ZONE).toLocalDate();
 
-      var contractType = toWorkerType(current.contractType());
-      var totalWorkDays = Objects.toString(current.projectedDaysToWork(), "-");
+      final double totalDaysWorked =
+          missionExecutionPercentageSumByWorker(current.worker(), entranceDate, nextEntranceDate);
 
       result.add(
           new ThWorkerLevelHistory(
               current.level().getLevel(),
               current.entranceInstant(),
-              contractType,
-              totalWorkDays,
+              toWorkerType(current.contractType()),
+              Objects.toString(current.projectedDaysToWork(), "-"),
               String.valueOf(totalDaysWorked),
               current.salary(),
               current.jobTitle(),
